@@ -34,7 +34,8 @@ void Game::handle_event(ALLEGRO_EVENT event)
         al_flip_display();
         al_clear_to_color(al_map_rgb(0, 0, 0));
     }
-    else{
+    else
+    {
         camera.handle_event(event);
     }
 }
