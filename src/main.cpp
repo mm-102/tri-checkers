@@ -5,7 +5,7 @@
 int main(){
     al_init();
     al_init_image_addon();
-
+    al_install_mouse();
     Game game;
     game.start();
     return 0;
