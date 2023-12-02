@@ -40,6 +40,8 @@ void Camera::handle_event(ALLEGRO_EVENT event)
 
 void Camera::zoom_to_point(ALLEGRO_MOUSE_EVENT mouse)
 {
+    if (!mouse.dz)
+        return;
     const float zoom_change = mouse.dz * sensivity;
     const float scale_change = 1 + zoom_change / zoom;
     zoom += zoom_change;

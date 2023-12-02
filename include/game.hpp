@@ -2,6 +2,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
 #include <camera.hpp>
+#include <board.hpp>
 
 #define TEXTURE_PATH "../assets/textures/"
 
@@ -21,6 +22,7 @@ class Game
     ALLEGRO_BITMAP **textures;
 
     Camera camera;
+    Board* board;
 
     void handle_event(ALLEGRO_EVENT event);
     void load_textures();

@@ -8,6 +8,7 @@ Game::Game()
     this->timer = al_create_timer(1.0 / FPS);
     textures = new ALLEGRO_BITMAP *[TEXTURES_NO];
     load_textures();
+    this->board = new Board(textures[TILE]);
 }
 Game::~Game()
 {
@@ -29,7 +30,8 @@ void Game::handle_event(ALLEGRO_EVENT event)
     if (event.type == ALLEGRO_EVENT_TIMER)
     {
         camera.update();
-        al_draw_tinted_bitmap(textures[TILE], dark_tile_color, -64, -55, 0);
+        // al_draw_tinted_bitmap(textures[TILE], dark_tile_color, -64, -55, 0);
+        board->draw();
 
         al_flip_display();
         al_clear_to_color(al_map_rgb(0, 0, 0));
