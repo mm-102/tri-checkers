@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.20)
 project(tri-checkers)
 
 file(GLOB sources src/*.cpp)
@@ -32,7 +32,8 @@ else()
     find_library(allegro_memfile NAMES liballegro_memfile REQUIRED)
 endif()
 
-target_include_directories(tri-checkers PUBLIC ${allegro}/../../include)
+cmake_path(SET allegro_include NORMALIZE ${allegro}/../../include/)
+target_include_directories(tri-checkers PUBLIC ${allegro_include})
 
 set(libraries ${allegro} ${allegro_main} ${allegro_memfile} ${allegro_image} ${allegro_primitives})
 
