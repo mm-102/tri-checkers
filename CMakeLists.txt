@@ -12,6 +12,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     message("built on windows")
     find_library(allegro NAMES liballegro liballegro.dll.a REQUIRED)
     find_library(allegro_image NAMES liballegro_image.dll.a REQUIRED)
+    find_library(allegro_primitives NAMES liballegro_primitives.dll.a REQUIRED)
     find_library(allegro_main NAMES liballegro_main.dll.a REQUIRED)
     find_library(allegro_memfile NAMES liballegro_memfile.dll.a REQUIRED)
     
@@ -19,6 +20,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     message("built on Linux")
     find_library(allegro NAMES liballegro.so REQUIRED)
     find_library(allegro_image NAMES liballegro_image.so REQUIRED)
+    find_library(allegro_primitives NAMES liballegro_primitives.so REQUIRED)
     find_library(allegro_main NAMES liballegro_main.so REQUIRED)
     find_library(allegro_memfile NAMES liballegro_memfile.so REQUIRED)
     
@@ -32,6 +34,6 @@ endif()
 
 target_include_directories(tri-checkers PUBLIC ${allegro}/../../include)
 
-set(libraries ${allegro} ${allegro_main} ${allegro_memfile} ${allegro_image})
+set(libraries ${allegro} ${allegro_main} ${allegro_memfile} ${allegro_image} ${allegro_primitives})
 
 target_link_libraries(tri-checkers ${libraries})

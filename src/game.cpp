@@ -30,11 +30,10 @@ void Game::handle_event(ALLEGRO_EVENT event)
     if (event.type == ALLEGRO_EVENT_TIMER)
     {
         camera.update();
-        // al_draw_tinted_bitmap(textures[TILE], dark_tile_color, -64, -55, 0);
         board->draw();
 
         al_flip_display();
-        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_clear_to_color(al_map_rgb(255, 227, 181));
     }
     else
     {
