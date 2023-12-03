@@ -1,15 +1,23 @@
 #include <camera.hpp>
+#include <cmath>
 
 Camera::Camera()
 {
-    pos[0] = 0;
-    pos[1] = 0;
+    pos[0] = halfx;
+    pos[1] = halfy;
     zoom = 1;
     rotation = 0;
     pressed = false;
     mouse_in_display = false;
     al_identity_transform(&transform);
     al_translate_transform(&transform, halfx, halfy);
+    update_inv_transform();
+}
+
+void Camera::update_inv_transform()
+{
+    al_copy_transform(&inv_transform, &transform);
+    al_invert_transform(&inv_transform);
 }
 
 void Camera::handle_event(ALLEGRO_EVENT event)
@@ -42,16 +50,21 @@ void Camera::zoom_to_point(ALLEGRO_MOUSE_EVENT mouse)
 {
     if (!mouse.dz)
         return;
-    const float zoom_change = mouse.dz * sensivity;
-    const float scale_change = 1 + zoom_change / zoom;
-    zoom += zoom_change;
+    mz += mouse.dz * sensivity;
+    const float wz = expf(mz);
+    const float new_zoom = wz < min_zoom ? min_zoom : (wz > max_zoom ? max_zoom : wz);
+    mz = logf(new_zoom);
+    const float d_zoom = new_zoom - zoom;
+    const float zoom_change = d_zoom / zoom;
+    const float scale_change = 1 + zoom_change;
+    const float mx = mouse.x - halfx, my = mouse.y - halfy;
     al_translate_transform(&transform, -halfx, -halfy);
     al_scale_transform(&transform, scale_change, scale_change);
-    const float offX = (halfx - mouse.x) * zoom_change;
-    const float offY = (halfy - mouse.y) * zoom_change;
-    pos[0] += offX;
-    pos[1] += offY;
+    const float offX = -mx * zoom_change;
+    const float offY = -my * zoom_change;
     al_translate_transform(&transform, offX + halfx, offY + halfy);
+    update_inv_transform();
+    zoom = new_zoom;
 }
 
 void Camera::drag(ALLEGRO_MOUSE_EVENT mouse)
@@ -59,6 +72,18 @@ void Camera::drag(ALLEGRO_MOUSE_EVENT mouse)
     al_translate_transform(&transform, mouse.dx, mouse.dy);
     pos[0] += mouse.dx;
     pos[1] += mouse.dy;
+}
+
+void Camera::rotate_to(float a)
+{
+    rotate(a - rotation);
+}
+
+void Camera::rotate(float da)
+{
+    al_translate_transform(&transform, -pos[0], -pos[1]);
+    al_rotate_transform(&transform, da);
+    al_translate_transform(&transform, pos[0], pos[1]);
 }
 
 void Camera::update()
