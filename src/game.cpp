@@ -8,7 +8,7 @@ Game::Game()
     this->timer = al_create_timer(1.0 / FPS);
     textures = new ALLEGRO_BITMAP *[TEXTURES_NO];
     load_textures();
-    this->board = new Board(textures[TILE]);
+    this->board = new Board(textures[TILE], &camera);
 }
 Game::~Game()
 {
@@ -24,6 +24,7 @@ Game::~Game()
 void Game::load_textures()
 {
     textures[TILE] = al_load_bitmap(TEXTURE_PATH "tile.png");
+    textures[TILE_SELECT] = al_load_bitmap(TEXTURE_PATH "tile_select.png");
 }
 void Game::handle_event(ALLEGRO_EVENT event)
 {
@@ -39,6 +40,7 @@ void Game::handle_event(ALLEGRO_EVENT event)
     else
     {
         camera.handle_event(event);
+        board->handle_event(event);
     }
 }
 void Game::start()

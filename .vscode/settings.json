@@ -44,6 +44,10 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "queue": "cpp",
+        "cstring": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp"
     }
 }

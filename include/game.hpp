@@ -11,6 +11,7 @@ class Game
     enum TextureName
     {
         TILE,
+        TILE_SELECT,
         TEXTURES_NO
     };
     const ALLEGRO_COLOR light_tile_color = al_map_rgb(255, 255, 255);

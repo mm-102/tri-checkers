@@ -13,9 +13,11 @@ Tile::Tile(int x, int y, ALLEGRO_BITMAP *texture, ALLEGRO_COLOR color)
     draw_pos[0] = (-(1 + (abs(pos[1]) % 2)) * 0.5 + pos[0]) * texW;
     draw_pos[1] = (0.333 + pos[1]) * texH;
 }
-void Tile::draw(){
+void Tile::draw()
+{
     al_draw_tinted_bitmap(texture, color, draw_pos[0], draw_pos[1], 0);
 }
-std::pair<int, int> Tile::get_center_pos(){
+std::pair<int, int> Tile::get_center_pos()
+{
     return center_pos;
 }

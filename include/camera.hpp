@@ -27,4 +27,5 @@ public:
     void rotate_to(float a);
     void rotate(float da);
     void update();
+    void revert_transform(float *x, float *y);
 };
