@@ -1,6 +1,6 @@
 #pragma once
 #include <camera.hpp>
-#include <queue>
+#include <deque>
 #include <allegro5/allegro5.h>
 #include <tile.hpp>
 
@@ -14,15 +14,18 @@ class TileSelect
         double spawn_time;
     } TailNode;
 
+    const double tail_lifeTime = 0.2;
     Camera *camera;
-    std::queue<TailNode> tail;
+    std::deque<TailNode> tail;
     ALLEGRO_COLOR main_color;
-    int main_x, main_y;
+    ALLEGRO_COLOR tail_color;
+    ALLEGRO_BITMAP *texture;
+    int texWOff, texHOff;
+    Tile *current;
     float draw_x, draw_y;
-    bool draw_main;
 
 public:
-    TileSelect(Camera *camera);
+    TileSelect(Camera *camera, ALLEGRO_BITMAP *texture);
     void draw();
     void add_node(Tile *tile);
 };

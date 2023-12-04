@@ -3,6 +3,7 @@
 #include <camera.hpp>
 #include <vector>
 #include <allegro5/allegro_image.h>
+#include <tile_select.hpp>
 
 class Board{
     Camera* camera;
@@ -13,8 +14,9 @@ class Board{
     float trangle_points[6];
     float board_size_factor;
     int texW, texH;
+    TileSelect* tileSelect;
     public:
-    Board(ALLEGRO_BITMAP* tile_texture, Camera* camera);
+    Board(ALLEGRO_BITMAP* tile_texture, Camera* camera, ALLEGRO_BITMAP* tile_select_texture);
     void draw();
     void handle_event(ALLEGRO_EVENT event);
     Tile* get_tile_from_pos(float x, float y);

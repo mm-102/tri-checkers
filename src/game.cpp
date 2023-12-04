@@ -8,7 +8,7 @@ Game::Game()
     this->timer = al_create_timer(1.0 / FPS);
     textures = new ALLEGRO_BITMAP *[TEXTURES_NO];
     load_textures();
-    this->board = new Board(textures[TILE], &camera);
+    this->board = new Board(textures[TILE], &camera, textures[TILE_SELECT]);
 }
 Game::~Game()
 {

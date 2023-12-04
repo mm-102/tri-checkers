@@ -5,13 +5,14 @@
 #include <cmath>
 #include <iostream>
 
-Board::Board(ALLEGRO_BITMAP *tile_texture, Camera *camera)
+Board::Board(ALLEGRO_BITMAP *tile_texture, Camera *camera, ALLEGRO_BITMAP *tile_select_texture)
 {
     this->camera = camera;
     this->tile_color = al_map_rgb(255, 205, 177);
     this->background_color = al_map_rgb(115, 23, 0);
     this->board_size_factor = 1;
     this->tile_texture = tile_texture;
+    tileSelect = new TileSelect(camera, tile_select_texture);
     texW = al_get_bitmap_width(tile_texture);
     texH = al_get_bitmap_height(tile_texture);
     const int min_y = -BOARD_SIZE;
@@ -60,6 +61,7 @@ void Board::draw()
         for (Tile *tile : row)
             tile->draw();
     }
+    tileSelect->draw();
 }
 
 Tile *Board::get_tile_from_mouse_pos(float x, float y)
@@ -74,6 +76,15 @@ Tile *Board::get_tile_from_pos(float x, float y)
     int row = floorf(y / texH);
     x += 0.5 * (1 + (abs(row) % 2)) * texW;
     int col = floorf(x / texW);
+    int xox = (int)floor(x);
+    int yoy = (int)floor(y);
+    float ox = (xox % texW + texW) % texW;
+    float oy = (yoy % texH + texH) % texH;
+    if (ox < texW / 2 && oy > ox * sqrt(3))
+        return nullptr;
+    else if (ox >= texW / 2 && oy > (texW - ox) * sqrt(3))
+        return nullptr;
+
     return get_tile_from_coords(col, row);
 }
 
@@ -81,7 +92,6 @@ Tile *Board::get_tile_from_coords(int x, int y)
 {
     int vec_y = y + BOARD_SIZE;
     int vec_x = x + BOARD_SIZE - vec_y / 2;
-    // std::cout << vec_x << " " << vec_y << std::endl;
     if (vec_y < 0 || vec_y >= tiles.size())
         return nullptr;
     if (vec_x < 0 || vec_x >= tiles[vec_y].size())
@@ -94,9 +104,6 @@ void Board::handle_event(ALLEGRO_EVENT event)
     if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
     {
         Tile *tile = get_tile_from_mouse_pos(event.mouse.x, event.mouse.y);
-        if (tile != nullptr)
-        {
-            // std::cout << tile->get_coords()[0] << " " << tile->get_coords()[1] << std::endl;
-        }
+        tileSelect->add_node(tile);
     }
 }
