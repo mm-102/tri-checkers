@@ -1,10 +1,9 @@
 #include <camera.hpp>
 #include <cmath>
+#include <iostream>
 
 Camera::Camera()
 {
-    pos[0] = halfx;
-    pos[1] = halfy;
     zoom = 1;
     rotation = 0;
     pressed = false;
@@ -72,8 +71,6 @@ void Camera::drag(ALLEGRO_MOUSE_EVENT mouse)
     if(!mouse.dx && !mouse.dy)
         return;
     al_translate_transform(&transform, mouse.dx, mouse.dy);
-    pos[0] += mouse.dx;
-    pos[1] += mouse.dy;
     update_inv_transform();
 }
 
@@ -84,9 +81,11 @@ void Camera::rotate_to(float a)
 
 void Camera::rotate(float da)
 {
-    al_translate_transform(&transform, -pos[0], -pos[1]);
+    float ox = transform.m[3][0];
+    float oy = transform.m[3][1];
+    al_translate_transform(&transform, -ox, -oy);
     al_rotate_transform(&transform, da);
-    al_translate_transform(&transform, pos[0], pos[1]);
+    al_translate_transform(&transform, ox, oy);
     update_inv_transform();
 }
 

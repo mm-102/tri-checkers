@@ -12,7 +12,6 @@ class Camera
     const double min_zoom = 0.25;
     const double max_zoom = 4;
     double mz;
-    double pos[2];
     double zoom;
     float rotation;
     bool pressed;
