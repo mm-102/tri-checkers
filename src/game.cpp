@@ -6,31 +6,21 @@ Game::Game()
     this->display = al_create_display(SCREEN_X, SCREEN_Y);
     this->event_queue = al_create_event_queue();
     this->timer = al_create_timer(1.0 / FPS);
-    textures = new ALLEGRO_BITMAP *[TEXTURES_NO];
-    load_textures();
-    this->board = new Board(textures[TILE], &camera, textures[TILE_SELECT]);
+    this->textures = new Textures();
+    this->board = new Board(textures, &camera);
 }
 Game::~Game()
 {
     al_destroy_timer(timer);
     al_destroy_event_queue(event_queue);
     al_destroy_display(display);
-    for (int t = 0; t != TEXTURES_NO; t++)
-    {
-        al_destroy_bitmap(textures[t]);
-    }
-    delete[] textures;
-}
-void Game::load_textures()
-{
-    textures[TILE] = al_load_bitmap(TEXTURE_PATH "tile.png");
-    textures[TILE_SELECT] = al_load_bitmap(TEXTURE_PATH "tile_select.png");
+    delete textures;
 }
 void Game::handle_event(ALLEGRO_EVENT event)
 {
     if (event.type == ALLEGRO_EVENT_TIMER)
     {
-        camera.rotate(0.01);
+        // camera.rotate(0.01);
         camera.update();
         board->draw();
 

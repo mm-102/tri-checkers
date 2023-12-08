@@ -1,18 +1,19 @@
 #include <board.hpp>
+#include <game.hpp>
 #include <settings.hpp>
 #include <allegro5/allegro_primitives.h>
 #include <utility>
 #include <cmath>
 #include <iostream>
 
-Board::Board(ALLEGRO_BITMAP *tile_texture, Camera *camera, ALLEGRO_BITMAP *tile_select_texture)
+Board::Board(Textures *textures, Camera *camera)
 {
     this->camera = camera;
     this->tile_color = al_map_rgb(255, 205, 177);
     this->background_color = al_map_rgb(115, 23, 0);
     this->board_size_factor = 1;
-    this->tile_texture = tile_texture;
-    tileSelect = new TileSelect(camera, tile_select_texture);
+    tileSelect = new TileSelect(camera, textures->TILE_SELECT);
+    ALLEGRO_BITMAP* tile_texture = textures->TILE;
     texW = al_get_bitmap_width(tile_texture);
     texH = al_get_bitmap_height(tile_texture);
     const int min_y = -BOARD_SIZE;
@@ -24,7 +25,7 @@ Board::Board(ALLEGRO_BITMAP *tile_texture, Camera *camera, ALLEGRO_BITMAP *tile_
         std::vector<Tile *> row;
         for (int x = min_x; x <= max_x; x++)
         {
-            row.push_back(new Tile(x, y, tile_texture, tile_color));
+            row.push_back(new Tile(x, y, textures, tile_color, PieceType::QUEEN, PieceColor::BLUE));
         }
         tiles.push_back(row);
         if (abs(y) % 2)
