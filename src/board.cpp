@@ -51,7 +51,6 @@ Board::Board(Textures *textures, Camera *camera)
         else
             max_x++;
     }
-
     for(int y = 0; y < tiles.size(); y++){
         for(int x = 0; x < tiles[y].size(); x++){
             Tile *t = tiles[y][x];
@@ -59,8 +58,8 @@ Board::Board(Textures *textures, Camera *camera)
             t->neighbours[1] = y > 0 ? tiles[y-1][x] : nullptr; // F_LEFT
             t->neighbours[2] = (y > 0 && x < tiles[y].size() - 1) ? tiles[y-1][x+1] : nullptr; // F_RIGHT
             t->neighbours[3] = (x < tiles[y].size() - 1) ? tiles[y][x+1] : nullptr; // RIGHT
-            t->neighbours[4] = (y < tiles.size() - 1) ? tiles[y+1][x] : nullptr; // B_RIGHT
-            t->neighbours[5] = (x > 0 && y < tiles.size() - 1) ? tiles[y+1][x-1] : nullptr; // B_LEFT
+            t->neighbours[4] = (y < tiles.size() - 1 && x < tiles[y+1].size()) ? tiles[y+1][x] : nullptr; // B_RIGHT
+            t->neighbours[5] = x > 0 ? tiles[y+1][x-1] : nullptr; // B_LEFT
         }
     }
 
