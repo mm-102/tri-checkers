@@ -1,5 +1,6 @@
 #include <tile.hpp>
 #include <game.hpp>
+#include <iostream>
 
 Tile::Tile(int x, int y, Textures *textures, ALLEGRO_COLOR color, PieceType start_piece, PieceColor start_color)
 {
@@ -16,6 +17,11 @@ Tile::Tile(int x, int y, Textures *textures, ALLEGRO_COLOR color, PieceType star
     center_pos.second = (0.666 + pos[1]) * texH;
     draw_pos[0] = (-(1 + (abs(pos[1]) % 2)) * 0.5 + pos[0]) * texW;
     draw_pos[1] = (0.333 + pos[1]) * texH;
+    neighbours = new Tile*[static_cast<int>(PieceMoveDir::NONE)];
+}
+Tile::~Tile()
+{
+    delete neighbours; // not delete[] as tiles are deleted by board
 }
 void Tile::draw()
 {
@@ -26,4 +32,16 @@ void Tile::draw()
 std::pair<int, int> Tile::get_center_pos()
 {
     return center_pos;
+}
+
+Tile* Tile::move(PieceMoveDir move_dir, PieceColor p_col)
+{
+    if (move_dir == PieceMoveDir::NONE)
+        return this;
+    int m = static_cast<int>(move_dir);
+    if (p_col == PieceColor::GREEN)
+        m = (m + 4) % static_cast<int>(PieceMoveDir::NONE);
+    else if(p_col == PieceColor::BLUE)
+        m = (m + 2) % static_cast<int>(PieceMoveDir::NONE);
+    return neighbours[m];
 }

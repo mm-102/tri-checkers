@@ -35,3 +35,14 @@ public:
         return _color[static_cast<int>(c)];
     }
 } PieceDrawColor;
+
+enum class PieceMoveDir //RED +0 GREEN +4 BLUE +2
+{
+    LEFT,
+    F_LEFT,
+    F_RIGHT,
+    RIGHT,
+    B_RIGHT,
+    B_LEFT,
+    NONE
+};

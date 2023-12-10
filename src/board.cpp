@@ -51,6 +51,19 @@ Board::Board(Textures *textures, Camera *camera)
         else
             max_x++;
     }
+
+    for(int y = 0; y < tiles.size(); y++){
+        for(int x = 0; x < tiles[y].size(); x++){
+            Tile *t = tiles[y][x];
+            t->neighbours[0] = x > 0 ? tiles[y][x-1] : nullptr; // LEFT
+            t->neighbours[1] = y > 0 ? tiles[y-1][x] : nullptr; // F_LEFT
+            t->neighbours[2] = (y > 0 && x < tiles[y].size() - 1) ? tiles[y-1][x+1] : nullptr; // F_RIGHT
+            t->neighbours[3] = (x < tiles[y].size() - 1) ? tiles[y][x+1] : nullptr; // RIGHT
+            t->neighbours[4] = (y < tiles.size() - 1) ? tiles[y+1][x] : nullptr; // B_RIGHT
+            t->neighbours[5] = (x > 0 && y < tiles.size() - 1) ? tiles[y+1][x-1] : nullptr; // B_LEFT
+        }
+    }
+
     const std::pair<int, int> p1 = tiles[0].front()->get_center_pos();
     const std::pair<int, int> p2 = tiles[0].back()->get_center_pos();
     const std::pair<int, int> p3 = tiles.back()[0]->get_center_pos();
@@ -63,6 +76,7 @@ Board::Board(Textures *textures, Camera *camera)
     trangle_points[3] = p2.second - by;
     trangle_points[4] = p3.first;
     trangle_points[5] = p3.second + b;
+
 }
 
 void Board::draw()
@@ -123,6 +137,8 @@ void Board::handle_event(ALLEGRO_EVENT event)
     if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
     {
         Tile *tile = get_tile_from_mouse_pos(event.mouse.x, event.mouse.y);
+        if(tile != nullptr)
+            tile = tile->move(PieceMoveDir::B_RIGHT, PieceColor::RED);
         tileSelect->add_node(tile);
     }
 }
