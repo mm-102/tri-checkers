@@ -3,9 +3,9 @@
 
 enum class PieceType
 {
-    NONE,
     PAWN,
-    QUEEN
+    QUEEN,
+    NONE
 };
 
 enum class PieceColor

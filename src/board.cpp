@@ -18,20 +18,37 @@ Board::Board(Textures *textures, Camera *camera)
     texH = al_get_bitmap_height(tile_texture);
     const int min_y = -BOARD_SIZE;
     const int max_y = (BOARD_SIZE - 1) * 2;
-    int min_x = -BOARD_SIZE;
-    int max_x = BOARD_SIZE + (BOARD_SIZE % 2);
-    for (int y = min_y; y <= max_y; y++)
+    tiles = std::vector<std::vector<Tile *>>(max_y-min_y+1);
+    int min_x = 0;
+    int max_x = 0;
+    // int min_x = -BOARD_SIZE;
+    // int max_x = BOARD_SIZE + (BOARD_SIZE % 2);
+    // for (int y = min_y; y <= max_y; y++)
+    // {
+    //     std::vector<Tile *> row;
+    //     for (int x = min_x; x <= max_x; x++)
+    //     {
+    //         row.push_back(new Tile(x, y, textures, tile_color, PieceType::QUEEN, (x==0 && y==0) ? PieceColor::RED : PieceColor::BLUE));
+    //     }
+    //     if(row.empty())
+    //         break;
+    //     tiles.push_back(row);
+    //     if (abs(y) % 2)
+    //         max_x--;
+    //     else
+    //         min_x++;
+    // }
+    for (int y = max_y; y >= min_y; y--)
     {
         std::vector<Tile *> row;
-        for (int x = min_x; x <= max_x; x++)
-        {
-            row.push_back(new Tile(x, y, textures, tile_color, PieceType::QUEEN, PieceColor::BLUE));
+        for (int x = min_x; x <= max_x; x++){
+            row.push_back(new Tile(x, y, textures, tile_color, PieceType::QUEEN, (x==0 && y==0) ? PieceColor::RED : PieceColor::BLUE));
         }
-        tiles.push_back(row);
+        tiles[y-min_y] = row;
         if (abs(y) % 2)
-            max_x--;
+            min_x--;
         else
-            min_x++;
+            max_x++;
     }
     const std::pair<int, int> p1 = tiles[0].front()->get_center_pos();
     const std::pair<int, int> p2 = tiles[0].back()->get_center_pos();
@@ -76,7 +93,7 @@ Tile *Board::get_tile_from_pos(float x, float y)
     y -= 0.333 * texH;
     int row = floorf(y / texH);
     x += 0.5 * (1 + (abs(row) % 2)) * texW;
-    int col = floorf(x / texW);
+    int col = ceilf(x / texW) - ((abs(row) % 2)*(1 - (BOARD_SIZE % 2)));
     int xox = (int)floor(x);
     int yoy = (int)floor(y);
     float ox = (xox % texW + texW) % texW;

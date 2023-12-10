@@ -20,7 +20,7 @@ void Game::handle_event(ALLEGRO_EVENT event)
 {
     if (event.type == ALLEGRO_EVENT_TIMER)
     {
-        // camera.rotate(0.01);
+        // camera.rotate(0.005);
         camera.update();
         board->draw();
 
