@@ -21,28 +21,29 @@ Board::Board(Textures *textures, Camera *camera)
     tiles = std::vector<std::vector<Tile *>>(max_y-min_y+1);
     int min_x = 0;
     int max_x = 0;
-    // int min_x = -BOARD_SIZE;
-    // int max_x = BOARD_SIZE + (BOARD_SIZE % 2);
-    // for (int y = min_y; y <= max_y; y++)
-    // {
-    //     std::vector<Tile *> row;
-    //     for (int x = min_x; x <= max_x; x++)
-    //     {
-    //         row.push_back(new Tile(x, y, textures, tile_color, PieceType::QUEEN, (x==0 && y==0) ? PieceColor::RED : PieceColor::BLUE));
-    //     }
-    //     if(row.empty())
-    //         break;
-    //     tiles.push_back(row);
-    //     if (abs(y) % 2)
-    //         max_x--;
-    //     else
-    //         min_x++;
-    // }
     for (int y = max_y; y >= min_y; y--)
     {
         std::vector<Tile *> row;
         for (int x = min_x; x <= max_x; x++){
-            row.push_back(new Tile(x, y, textures, tile_color, PieceType::QUEEN, (x==0 && y==0) ? PieceColor::RED : PieceColor::BLUE));
+            PieceType type = PieceType::NONE;
+            PieceColor color = PieceColor::NONE;
+            if (max_y - y < BOARD_SIZE) // bottom
+            {
+                type = PieceType::PAWN;
+                color = PieceColor::RED;
+            }
+            else if (x - min_x < BOARD_SIZE - (y - min_y)) // top left
+            {
+                type = PieceType::PAWN;
+                color = PieceColor::BLUE;
+            }
+            else if (max_x - x < BOARD_SIZE - (y - min_y)) // top right
+            {
+                type = PieceType::PAWN;
+                color = PieceColor::GREEN;
+            }
+
+            row.push_back(new Tile(x, y, textures, tile_color, type, color));
         }
         tiles[y-min_y] = row;
         if (abs(y) % 2)
@@ -93,7 +94,7 @@ Tile *Board::get_tile_from_pos(float x, float y)
     y -= 0.333 * texH;
     int row = floorf(y / texH);
     x += 0.5 * (1 + (abs(row) % 2)) * texW;
-    int col = ceilf(x / texW) - ((abs(row) % 2)*(1 - (BOARD_SIZE % 2)));
+    int col = floorf(x / texW) + floorf(BOARD_SIZE * 0.5) - 1 - (1 - (BOARD_SIZE % 2)) * (abs(row) % 2);
     int xox = (int)floor(x);
     int yoy = (int)floor(y);
     float ox = (xox % texW + texW) % texW;

@@ -23,7 +23,7 @@ class
         [this]
         {
             _color[0] = al_map_rgb(255, 0, 0);
-            _color[1] = al_map_rgb(0, 255, 0);
+            _color[1] = al_map_rgb(67, 149, 0);
             _color[2] = al_map_rgb(0, 0, 255);
             _color[3] = al_map_rgba_f(0, 0, 0, 0);
             return true;
