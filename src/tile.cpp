@@ -2,14 +2,15 @@
 #include <game.hpp>
 #include <iostream>
 
-Tile::Tile(int x, int y, Textures *textures, ALLEGRO_COLOR color, PieceType start_piece, PieceColor start_color)
+Tile::Tile(int x, int y, Textures *textures, PieceType start_piece, PieceColor start_color)
 {
     piece_type = start_piece;
     piece_color = start_color;
     pos[0] = x;
     pos[1] = y;
     this->textures = textures;
-    this->color = color;
+    colors = new ALLEGRO_COLOR[3]{al_map_rgb(255, 205, 177), al_map_rgb(128, 102, 88), al_map_rgb(200,180,140)};
+    mode = Mode::NORMAL;
     ALLEGRO_BITMAP *tile_texture = textures->TILE;
     const int texH = al_get_bitmap_height(tile_texture);
     const int texW = al_get_bitmap_width(tile_texture);
@@ -25,7 +26,7 @@ Tile::~Tile()
 }
 void Tile::draw()
 {
-    al_draw_tinted_bitmap(textures->TILE, color, draw_pos[0], draw_pos[1], 0);
+    al_draw_tinted_bitmap(textures->TILE, colors[static_cast<int>(mode)], draw_pos[0], draw_pos[1], 0);
     if (piece_type != PieceType::NONE)
         al_draw_tinted_bitmap((*textures)[piece_type], PieceDrawColor[piece_color], draw_pos[0], draw_pos[1], 0);
 }

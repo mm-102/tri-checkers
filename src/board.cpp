@@ -5,6 +5,7 @@
 #include <utility>
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 Board::Board(Textures *textures, Camera *camera)
 {
@@ -12,6 +13,8 @@ Board::Board(Textures *textures, Camera *camera)
     this->tile_color = al_map_rgb(255, 205, 177);
     this->background_color = al_map_rgb(115, 23, 0);
     this->board_size_factor = 1;
+    selected_tile = nullptr;
+    active_player = PieceColor::RED;
     tileSelect = new TileSelect(camera, textures->TILE_SELECT);
     ALLEGRO_BITMAP* tile_texture = textures->TILE;
     texW = al_get_bitmap_width(tile_texture);
@@ -43,7 +46,7 @@ Board::Board(Textures *textures, Camera *camera)
                 color = PieceColor::GREEN;
             }
 
-            row.push_back(new Tile(x, y, textures, tile_color, type, color));
+            row.push_back(new Tile(x, y, textures, type, color));
         }
         tiles[y-min_y] = row;
         if (abs(y) % 2)
@@ -136,8 +139,62 @@ void Board::handle_event(ALLEGRO_EVENT event)
     if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
     {
         Tile *tile = get_tile_from_mouse_pos(event.mouse.x, event.mouse.y);
-        if(tile != nullptr)
-            tile = tile->move(PieceMoveDir::B_RIGHT, PieceColor::RED);
+        // if(tile != nullptr)
+        //     tile = tile->move(PieceMoveDir::F_LEFT, PieceColor::RED);
         tileSelect->add_node(tile);
+    }
+    else if(event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+    {
+        Tile *tile = get_tile_from_mouse_pos(event.mouse.x, event.mouse.y);
+        if (selected_tile == nullptr && tile != nullptr){
+            if (tile->piece_type != PieceType::NONE && tile->piece_color == active_player){
+                gen_avaliable_moves(tile);
+                tile->mode = Tile::Mode::SELECTED;
+                selected_tile = tile;
+            }
+        }
+        else if (selected_tile != nullptr){
+            if (tile == selected_tile){
+                reset_avaliable_moves();
+                selected_tile->mode = Tile::Mode::NORMAL;
+                selected_tile = nullptr;
+            }
+            else if (std::find(avaliable_moves.begin(), avaliable_moves.end(), tile) != avaliable_moves.end()){
+                reset_avaliable_moves();
+                selected_tile->mode = Tile::Mode::NORMAL;
+
+                tile->piece_type = selected_tile->piece_type;
+                tile->piece_color = selected_tile->piece_color;
+                selected_tile->piece_type = PieceType::NONE;
+                selected_tile->piece_color = PieceColor::NONE;
+
+                active_player = (PieceColor)((static_cast<int>(active_player) + 1) % static_cast<int>(PieceColor::NONE));
+                camera->rotate(2.094);
+                selected_tile = nullptr;
+            }
+        }
+    }
+
+}
+void Board::reset_avaliable_moves(){
+    for (std::vector<Tile *>::iterator t = avaliable_moves.begin(); t != avaliable_moves.end(); t++){
+        (*t)->mode = Tile::Mode::NORMAL;
+    }
+    avaliable_moves.clear();
+}
+void Board::gen_avaliable_moves(Tile *tile){
+    reset_avaliable_moves();
+    if(tile->piece_type == PieceType::PAWN){
+        Tile *moved;
+        moved = tile->move(PieceMoveDir::F_LEFT, active_player);
+        if(moved != nullptr && moved->piece_type == PieceType::NONE){
+            avaliable_moves.push_back(moved);
+            moved->mode = Tile::Mode::HINT;
+        }
+        moved = tile->move(PieceMoveDir::F_RIGHT, active_player);
+        if(moved != nullptr && moved->piece_type == PieceType::NONE){
+            avaliable_moves.push_back(moved);
+            moved->mode = Tile::Mode::HINT;
+        }
     }
 }

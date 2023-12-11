@@ -11,13 +11,20 @@ class Tile
     std::pair<int, int> center_pos;
     int draw_pos[2];
     Textures *textures;
-    ALLEGRO_COLOR color;
+    ALLEGRO_COLOR *colors;
 
 public:
+    enum class Mode
+    {
+        NORMAL,
+        SELECTED,
+        HINT
+    } mode;
+
     Tile **neighbours;
     PieceType piece_type;
     PieceColor piece_color;
-    Tile(int x, int y, Textures *textures, ALLEGRO_COLOR color, PieceType start_piece, PieceColor start_color);
+    Tile(int x, int y, Textures *textures, PieceType start_piece, PieceColor start_color);
     ~Tile();
     void draw();
     std::pair<int, int> get_center_pos();
