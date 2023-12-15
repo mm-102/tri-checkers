@@ -11,6 +11,7 @@ class Board
     Camera *camera;
     std::vector<std::vector<Tile *>> tiles;
     std::vector<Tile *> avaliable_moves;
+    std::vector<Tile*> capture;
     ALLEGRO_COLOR tile_color;
     ALLEGRO_COLOR background_color;
     float trangle_points[6];
@@ -19,6 +20,7 @@ class Board
     TileSelect *tileSelect;
     Tile *selected_tile;
     PieceColor active_player;
+    void gen_pawn_move(Tile *tile, PieceMoveDir moveDir);
 
 public:
 

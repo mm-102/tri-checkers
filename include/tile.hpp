@@ -18,7 +18,8 @@ public:
     {
         NORMAL,
         SELECTED,
-        HINT
+        HINT,
+        CAPTURE
     } mode;
 
     Tile **neighbours;
