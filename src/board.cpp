@@ -13,6 +13,7 @@ Board::Board(Textures *textures, Camera *camera)
     this->tile_color = al_map_rgb(255, 205, 177);
     this->background_color = al_map_rgb(115, 23, 0);
     this->board_size_factor = 1;
+    this->capture_streak = false;
     selected_tile = nullptr;
     active_player = PieceColor::RED;
     tileSelect = new TileSelect(camera, textures->TILE_SELECT);
@@ -153,9 +154,11 @@ void Board::handle_event(ALLEGRO_EVENT event)
         }
         else if (selected_tile != nullptr){
             if (tile == selected_tile){
-                reset_avaliable_moves();
-                selected_tile->mode = Tile::Mode::NORMAL;
-                selected_tile = nullptr;
+                if(!capture_streak){
+                    reset_avaliable_moves();
+                    selected_tile->mode = Tile::Mode::NORMAL;
+                    selected_tile = nullptr;
+                }    
             }
             else if (std::find(avaliable_moves.begin(), avaliable_moves.end(), tile) != avaliable_moves.end()){
                 tile->piece_type = selected_tile->piece_type;
@@ -176,12 +179,18 @@ void Board::handle_event(ALLEGRO_EVENT event)
                     }
                 }
                 reset_avaliable_moves();
+                bool next_player = true;
                 if(capture_made){
                     gen_avaliable_moves(tile);
-                    selected_tile = tile;
-                    selected_tile->mode = Tile::Mode::SELECTED;
+                    if (!avaliable_moves.empty()){
+                        selected_tile = tile;
+                        selected_tile->mode = Tile::Mode::SELECTED;
+                        capture_streak = true;
+                        next_player = false;
+                    }
                 }
-                else{
+                if(next_player){
+                    capture_streak = false;
                     selected_tile = nullptr;
                     active_player = (PieceColor)((static_cast<int>(active_player) + 1) % static_cast<int>(PieceColor::NONE));
                     double target_rot = M_PI * static_cast<int>(active_player) * 2.0 / 3.0;

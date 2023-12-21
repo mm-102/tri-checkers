@@ -19,6 +19,7 @@ class Board
     int texW, texH;
     TileSelect *tileSelect;
     Tile *selected_tile;
+    bool capture_streak;
     PieceColor active_player;
     
     void gen_pawn_move(Tile *tile, PieceMoveDir moveDir);
