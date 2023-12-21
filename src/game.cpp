@@ -18,6 +18,7 @@ Game::~Game()
 }
 void Game::handle_event(ALLEGRO_EVENT event)
 {
+    camera.handle_event(event);
     if (event.type == ALLEGRO_EVENT_TIMER)
     {
         // camera.rotate(0.005);
@@ -29,7 +30,6 @@ void Game::handle_event(ALLEGRO_EVENT event)
     }
     else
     {
-        camera.handle_event(event);
         board->handle_event(event);
     }
 }

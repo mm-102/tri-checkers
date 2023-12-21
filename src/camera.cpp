@@ -7,7 +7,7 @@ Camera::Camera()
     zoom = 1;
     rotation = 0;
     pressed = false;
-    mouse_in_display = false;
+    interpolating = false;
     al_identity_transform(&transform);
     al_translate_transform(&transform, halfx, halfy);
     update_inv_transform();
@@ -23,25 +23,21 @@ void Camera::handle_event(ALLEGRO_EVENT event)
 {
     switch (event.type)
     {
-    case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
-        mouse_in_display = false;
+    case ALLEGRO_EVENT_TIMER:
+        handle_interpolation();
+        break;
     case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
         pressed = false;
         break;
     case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
         pressed = true;
         break;
-    case ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
-        mouse_in_display = true;
-        break;
 
     case ALLEGRO_EVENT_MOUSE_AXES:
-        if (mouse_in_display)
-        {
-            zoom_to_point(event.mouse);
-            if (pressed)
-                drag(event.mouse);
-        }
+        zoom_to_point(event.mouse);
+        if (pressed)
+            drag(event.mouse);
+    
     }
 }
 
@@ -76,7 +72,10 @@ void Camera::drag(ALLEGRO_MOUSE_EVENT mouse)
 
 void Camera::rotate_to(float a)
 {
+    a = a > 2*M_PI ? a - 2*M_PI : a;
+    a = a < 0 ? a + 2*M_PI : a;
     rotate(a - rotation);
+    rotation = a;
 }
 
 void Camera::rotate(float da)
@@ -97,4 +96,27 @@ void Camera::update()
 void Camera::revert_transform(float *x, float *y)
 {
     al_transform_coordinates(&inv_transform, x, y);
+}
+
+void Camera::interpolate_rotate_to(float a, bool only_clockwise){
+    interpolating = true;
+    inter_start_rot = rotation;
+    inter_end_rot = a;
+    if(only_clockwise && inter_end_rot < rotation)
+        inter_end_rot += 2*M_PI;
+    inter_start = al_get_time();
+}
+
+void Camera::handle_interpolation(){
+    if(!interpolating)
+        return;
+    double d = (al_get_time() - inter_start);
+    if(d >= 1){
+        d = 1;
+        interpolating = false;
+    }
+
+    double i_d = d * d * (3 - 2*d);
+
+    rotate_to(inter_start_rot + (inter_end_rot-inter_start_rot)*i_d);
 }

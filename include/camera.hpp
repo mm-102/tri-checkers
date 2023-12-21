@@ -15,16 +15,23 @@ class Camera
     double zoom;
     float rotation;
     bool pressed;
-    bool mouse_in_display;
+
+    bool interpolating;
+    double inter_start;
+    float inter_start_rot;
+    float inter_end_rot;
+
     void zoom_to_point(ALLEGRO_MOUSE_EVENT mouse);
     void drag(ALLEGRO_MOUSE_EVENT mouse);
     void update_inv_transform();
+    void handle_interpolation();
 
 public:
     Camera();
     void handle_event(ALLEGRO_EVENT event);
     void rotate_to(float a);
     void rotate(float da);
+    void interpolate_rotate_to(float a, bool only_clockwise=true);
     void update();
     void revert_transform(float *x, float *y);
 };

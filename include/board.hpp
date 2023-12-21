@@ -20,6 +20,7 @@ class Board
     TileSelect *tileSelect;
     Tile *selected_tile;
     PieceColor active_player;
+    
     void gen_pawn_move(Tile *tile, PieceMoveDir moveDir);
 
 public:

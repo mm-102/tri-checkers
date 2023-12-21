@@ -139,8 +139,6 @@ void Board::handle_event(ALLEGRO_EVENT event)
     if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
     {
         Tile *tile = get_tile_from_mouse_pos(event.mouse.x, event.mouse.y);
-        // if(tile != nullptr)
-        //     tile = tile->move(PieceMoveDir::F_LEFT, PieceColor::RED);
         tileSelect->add_node(tile);
     }
     else if(event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
@@ -178,7 +176,8 @@ void Board::handle_event(ALLEGRO_EVENT event)
 
                 reset_avaliable_moves();
                 active_player = (PieceColor)((static_cast<int>(active_player) + 1) % static_cast<int>(PieceColor::NONE));
-                camera->rotate(2.094);
+                double target_rot = M_PI * static_cast<int>(active_player) * 2.0 / 3.0;
+                camera->interpolate_rotate_to(target_rot);
                 selected_tile = nullptr;
             }
         }
