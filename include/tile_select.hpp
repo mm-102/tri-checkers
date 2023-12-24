@@ -28,4 +28,5 @@ public:
     TileSelect(Camera *camera, ALLEGRO_BITMAP *texture);
     void draw();
     void add_node(Tile *tile);
+    void set_color(ALLEGRO_COLOR color);
 };

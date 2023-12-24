@@ -140,6 +140,7 @@ void Board::handle_event(ALLEGRO_EVENT event)
     if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
     {
         Tile *tile = get_tile_from_mouse_pos(event.mouse.x, event.mouse.y);
+        tileSelect->set_color(PieceDrawColor[active_player]);
         tileSelect->add_node(tile);
     }
     else if(event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
@@ -242,12 +243,12 @@ void Board::gen_pawn_move(Tile *tile, PieceMoveDir moveDir){
 
 void Board::gen_queen_move(Tile *tile, PieceMoveDir moveDir){
     bool cap = true;
-    for(Tile *moved = tile->move(moveDir, active_player); moved != nullptr; moved = moved->move(moveDir, active_player)){
-        if(cap && moved->piece_type == PieceType::NONE){
+    for(Tile *moved = tile->move(moveDir, active_player); moved != nullptr && cap; moved = moved->move(moveDir, active_player)){
+        if(moved->piece_type == PieceType::NONE){
             avaliable_moves.push_back(moved);
             moved->mode = Tile::Mode::HINT;
         }
-        else if(cap && moved->piece_color != active_player){
+        else if(moved->piece_color != active_player){
             cap = false;
             Tile* move_capture = moved->move(moveDir, active_player);
             if (move_capture != nullptr && move_capture->piece_type == PieceType::NONE){
