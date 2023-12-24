@@ -60,7 +60,7 @@ Board::Board(Textures *textures, Camera *camera)
             Tile *t = tiles[y][x];
             t->neighbours[0] = x > 0 ? tiles[y][x-1] : nullptr; // LEFT
             t->neighbours[1] = y > 0 ? tiles[y-1][x] : nullptr; // F_LEFT
-            t->neighbours[2] = (y > 0 && x < tiles[y].size() - 1) ? tiles[y-1][x+1] : nullptr; // F_RIGHT
+            t->neighbours[2] = (y > 0 && x < tiles[y].size()) ? tiles[y-1][x+1] : nullptr; // F_RIGHT
             t->neighbours[3] = (x < tiles[y].size() - 1) ? tiles[y][x+1] : nullptr; // RIGHT
             t->neighbours[4] = (y < tiles.size() - 1 && x < tiles[y+1].size()) ? tiles[y+1][x] : nullptr; // B_RIGHT
             t->neighbours[5] = x > 0 ? tiles[y+1][x-1] : nullptr; // B_LEFT
@@ -161,7 +161,11 @@ void Board::handle_event(ALLEGRO_EVENT event)
                 }    
             }
             else if (std::find(avaliable_moves.begin(), avaliable_moves.end(), tile) != avaliable_moves.end()){
-                tile->piece_type = selected_tile->piece_type;
+                if(tile->move(PieceMoveDir::F_LEFT, active_player) == nullptr) // on the opposite edge
+                    tile->piece_type = PieceType::QUEEN;
+                else
+                    tile->piece_type = selected_tile->piece_type;
+
                 tile->piece_color = selected_tile->piece_color;
 
                 selected_tile->mode = Tile::Mode::NORMAL;
@@ -235,10 +239,38 @@ void Board::gen_pawn_move(Tile *tile, PieceMoveDir moveDir){
         }
     }
 }
+
+void Board::gen_queen_move(Tile *tile, PieceMoveDir moveDir){
+    bool cap = true;
+    for(Tile *moved = tile->move(moveDir, active_player); moved != nullptr; moved = moved->move(moveDir, active_player)){
+        if(cap && moved->piece_type == PieceType::NONE){
+            avaliable_moves.push_back(moved);
+            moved->mode = Tile::Mode::HINT;
+        }
+        else if(cap && moved->piece_color != active_player){
+            cap = false;
+            Tile* move_capture = moved->move(moveDir, active_player);
+            if (move_capture != nullptr && move_capture->piece_type == PieceType::NONE){
+                avaliable_moves.push_back(move_capture);
+                capture.push_back(move_capture);
+                capture.push_back(moved);
+                move_capture->mode = Tile::Mode::HINT;
+                moved->mode = Tile::Mode::CAPTURE;
+            }
+        }
+        else break;
+    }
+}
+
 void Board::gen_avaliable_moves(Tile *tile){
     reset_avaliable_moves();
     if(tile->piece_type == PieceType::PAWN){
         gen_pawn_move(tile, PieceMoveDir::F_LEFT);
         gen_pawn_move(tile, PieceMoveDir::F_RIGHT);
+    }
+    else if(tile->piece_type == PieceType::QUEEN){
+        for(int d = 0; d < static_cast<int>(PieceMoveDir::NONE); d++){
+            gen_queen_move(tile, (PieceMoveDir)d);
+        }
     }
 }

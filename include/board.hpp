@@ -23,6 +23,7 @@ class Board
     PieceColor active_player;
     
     void gen_pawn_move(Tile *tile, PieceMoveDir moveDir);
+    void gen_queen_move(Tile *tile, PieceMoveDir moveDir);
 
 public:
 
