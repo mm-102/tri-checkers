@@ -2,7 +2,7 @@
 #include <game.hpp>
 #include <iostream>
 
-Tile::Tile(int x, int y, Textures *textures, PieceType start_piece, PieceColor start_color)
+Tile::Tile(int x, int y, Textures *textures, PieceType start_piece, PieceColor start_color, bool spawn)
 {
     piece_type = start_piece;
     piece_color = start_color;
@@ -10,6 +10,11 @@ Tile::Tile(int x, int y, Textures *textures, PieceType start_piece, PieceColor s
     pos[1] = y;
     this->textures = textures;
     colors = new ALLEGRO_COLOR[4]{al_map_rgb(255, 205, 177), al_map_rgb(128, 102, 88), al_map_rgb(200,180,140), al_map_rgb(255,0,0)};
+    if(spawn){
+        ALLEGRO_COLOR c = PieceDrawColor[start_color];
+        const float light = 0.7;
+        colors[0] = al_map_rgb_f(c.r + light * (1.0 - c.r), c.g + light * (1.0 - c.g), c.b + light * (1.0 - c.b));
+    }
     mode = Mode::NORMAL;
     ALLEGRO_BITMAP *tile_texture = textures->TILE;
     const int texH = al_get_bitmap_height(tile_texture);

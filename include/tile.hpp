@@ -25,7 +25,7 @@ public:
     Tile **neighbours;
     PieceType piece_type;
     PieceColor piece_color;
-    Tile(int x, int y, Textures *textures, PieceType start_piece, PieceColor start_color);
+    Tile(int x, int y, Textures *textures, PieceType start_piece, PieceColor start_color, bool spawn);
     ~Tile();
     void draw();
     std::pair<int, int> get_center_pos();

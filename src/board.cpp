@@ -31,23 +31,27 @@ Board::Board(Textures *textures, Camera *camera)
         for (int x = min_x; x <= max_x; x++){
             PieceType type = PieceType::NONE;
             PieceColor color = PieceColor::NONE;
+            bool spawn = false;
             if (max_y - y < BOARD_SIZE) // bottom
             {
                 type = PieceType::PAWN;
                 color = PieceColor::RED;
+                spawn = true;
             }
             else if (x - min_x < BOARD_SIZE - (y - min_y)) // top left
             {
                 type = PieceType::PAWN;
                 color = PieceColor::BLUE;
+                spawn = true;
             }
             else if (max_x - x < BOARD_SIZE - (y - min_y)) // top right
             {
                 type = PieceType::PAWN;
                 color = PieceColor::GREEN;
+                spawn = true;
             }
 
-            row.push_back(new Tile(x, y, textures, type, color));
+            row.push_back(new Tile(x, y, textures, type, color, spawn));
         }
         tiles[y-min_y] = row;
         if (abs(y) % 2)
