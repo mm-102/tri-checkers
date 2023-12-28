@@ -11,6 +11,24 @@ Camera::Camera()
     al_identity_transform(&transform);
     al_translate_transform(&transform, halfx, halfy);
     update_inv_transform();
+
+    shader = al_create_shader(ALLEGRO_SHADER_GLSL);
+    if(!shader){
+        std::cerr << "Could not create shader." << std::endl;
+        return;
+    }
+    // if(!al_attach_shader_source_file(shader, ALLEGRO_VERTEX_SHADER, SHADER_PATH "default.vert")){
+    //     std::cerr << "Could not attach vertex shader." << std::endl << al_get_shader_log(shader) << std::endl;
+    //     return;
+    // }
+    // if(!al_attach_shader_source_file(shader, ALLEGRO_VERTEX_SHADER, SHADER_PATH "default.vert")){
+    //     std::cerr << "Could not attach vertex shader." << std::endl << al_get_shader_log(shader) << std::endl;
+    //     return;
+    // }
+    // if(!al_build_shader(shader)){
+    //     std::cerr << "Could not build shader." << std::endl;
+    //     return;
+    // }
 }
 
 void Camera::update_inv_transform()

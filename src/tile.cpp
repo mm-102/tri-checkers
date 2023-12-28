@@ -9,7 +9,7 @@ Tile::Tile(int x, int y, Textures *textures, PieceType start_piece, PieceColor s
     pos[0] = x;
     pos[1] = y;
     this->textures = textures;
-    colors = new ALLEGRO_COLOR[4]{al_map_rgb(255, 205, 177), al_map_rgb(128, 102, 88), al_map_rgb(200,180,140), al_map_rgb(255,0,0)};
+    colors = new ALLEGRO_COLOR[4]{al_map_rgb(255, 205, 177), al_map_rgb(128, 102, 88), al_map_rgb(200,180,140), al_map_rgb(189, 0, 255)};
     if(spawn){
         ALLEGRO_COLOR c = PieceDrawColor[start_color];
         const float light = 0.7;

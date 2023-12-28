@@ -2,8 +2,11 @@
 #include <allegro5/allegro5.h>
 #include <settings.hpp>
 
+#define SHADER_PATH "../assets/shaders/"
+
 class Camera
 {
+    ALLEGRO_SHADER* shader;
     ALLEGRO_TRANSFORM transform;
     ALLEGRO_TRANSFORM inv_transform;
     const float sensivity = 0.05;
