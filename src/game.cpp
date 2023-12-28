@@ -5,6 +5,7 @@ Game::Game()
 {
     al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
     this->display = al_create_display(SCREEN_X, SCREEN_Y);
+    this->camera.init_shaders();
     this->event_queue = al_create_event_queue();
     this->timer = al_create_timer(1.0 / FPS);
     this->textures = new Textures();

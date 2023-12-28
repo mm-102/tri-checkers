@@ -31,6 +31,7 @@ class Camera
 
 public:
     Camera();
+    void init_shaders();
     void handle_event(ALLEGRO_EVENT event);
     void rotate_to(float a);
     void rotate(float da);
