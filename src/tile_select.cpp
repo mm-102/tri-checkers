@@ -54,3 +54,8 @@ void TileSelect::set_color(ALLEGRO_COLOR color){
     main_color = color;
     tail_color = al_map_rgb_f(color.r * 0.5, color.g * 0.5, color.b * 0.5);
 }
+
+void TileSelect::reset(){
+    tail.clear();
+    current = nullptr;
+}

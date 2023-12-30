@@ -96,11 +96,13 @@ void Board::draw()
         trangle_points[4],
         trangle_points[5],
         background_color);
+    camera->set_use_shadow(true);
     for (std::vector<Tile *> row : tiles)
     {
         for (Tile *tile : row)
             tile->draw();
     }
+    camera->set_use_shadow(false);
     tileSelect->draw();
 }
 
@@ -204,6 +206,7 @@ void Board::handle_event(ALLEGRO_EVENT event)
                     active_player = (PieceColor)((static_cast<int>(active_player) + 1) % static_cast<int>(PieceColor::NONE));
                     double target_rot = M_PI * static_cast<int>(active_player) * 2.0 / 3.0;
                     camera->interpolate_rotate_to(target_rot);
+                    tileSelect->reset();
                 }
 
             }

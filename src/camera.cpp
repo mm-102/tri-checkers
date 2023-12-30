@@ -3,6 +3,7 @@
 #include <iostream>
 
 void Camera::init_shaders(){
+    al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
     shader = al_create_shader(ALLEGRO_SHADER_AUTO);
     if(!shader){
         std::cerr << "Could not create shader." << std::endl;
@@ -20,6 +21,13 @@ void Camera::init_shaders(){
         std::cerr << "Could not build shader." << std::endl;
         return;
     }
+}
+
+void Camera::set_use_shadow(bool use){
+    if(use)
+        al_use_shader(shader);
+    else
+        al_use_shader(nullptr);
 }
 
 Camera::Camera()
@@ -106,6 +114,9 @@ void Camera::rotate(float da)
     al_rotate_transform(&transform, da);
     al_translate_transform(&transform, ox, oy);
     update_inv_transform();
+    al_use_shader(shader);
+    al_set_shader_float("u_rot", rotation);
+    al_use_shader(nullptr);
 }
 
 void Camera::update()
