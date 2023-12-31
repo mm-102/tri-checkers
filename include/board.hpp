@@ -4,6 +4,7 @@
 #include <camera.hpp>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <allegro5/allegro_image.h>
 #include <tile_select.hpp>
 
@@ -21,13 +22,13 @@ class Board
     bool capture_streak;
     PieceColor active_player;
 
-    std::vector<std::vector<Tile*>> pieces;
+    std::vector<std::unordered_set<Tile*>> pieces;
     std::unordered_map<Tile*,Tile*> active_piece_moves;
     std::vector<Tile*> movable_pieces;
 
-
     void gen_pawn_move(Tile *tile, PieceMoveDir moveDir, bool capture_only);
     void gen_queen_move(Tile *tile, PieceMoveDir moveDir, bool capture_only);
+    void update_movable_pieces();
 
 public:
 

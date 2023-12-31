@@ -141,7 +141,7 @@ void Camera::interpolate_rotate_to(float a, bool only_clockwise){
 void Camera::handle_interpolation(){
     if(!interpolating)
         return;
-    double d = (al_get_time() - inter_start);
+    double d = 2.0 * (al_get_time() - inter_start) / abs(inter_end_rot-inter_start_rot);
     if(d >= 1){
         d = 1;
         interpolating = false;
