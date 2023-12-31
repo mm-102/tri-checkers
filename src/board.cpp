@@ -7,6 +7,10 @@
 #include <iostream>
 #include <algorithm>
 
+Board::~Board()
+{
+}
+
 Board::Board(Textures *textures, Camera *camera)
 {
     this->camera = camera;
@@ -17,6 +21,10 @@ Board::Board(Textures *textures, Camera *camera)
     selected_tile = nullptr;
     active_player = PieceColor::RED;
     tileSelect = new TileSelect(camera, textures->TILE_SELECT);
+    for(int c = 0; c < static_cast<int>(PieceColor::NONE); c++){
+        std::vector<Tile*> vec;
+        pieces.push_back(vec);
+    }
     ALLEGRO_BITMAP* tile_texture = textures->TILE;
     texW = al_get_bitmap_width(tile_texture);
     texH = al_get_bitmap_height(tile_texture);
@@ -50,8 +58,11 @@ Board::Board(Textures *textures, Camera *camera)
                 color = PieceColor::GREEN;
                 spawn = true;
             }
-
-            row.push_back(new Tile(x, y, textures, type, color, spawn));
+            Tile* tmp = new Tile(x, y, textures, type, color, spawn);
+            if(color != PieceColor::NONE){
+                pieces[static_cast<int>(color)].push_back(tmp);
+            }
+            row.push_back(tmp);
         }
         tiles[y-min_y] = row;
         if (abs(y) % 2)
@@ -155,6 +166,7 @@ void Board::handle_event(ALLEGRO_EVENT event)
         if (selected_tile == nullptr && tile != nullptr){
             if (tile->piece_type != PieceType::NONE && tile->piece_color == active_player){
                 gen_avaliable_moves(tile);
+                hint_avaliable_moves();
                 tile->mode = Tile::Mode::SELECTED;
                 selected_tile = tile;
             }
@@ -167,37 +179,39 @@ void Board::handle_event(ALLEGRO_EVENT event)
                     selected_tile = nullptr;
                 }    
             }
-            else if (std::find(avaliable_moves.begin(), avaliable_moves.end(), tile) != avaliable_moves.end()){
-                if(tile->move(PieceMoveDir::F_LEFT, active_player) == nullptr) // on the opposite edge
+            else if(tile != nullptr && tile->piece_color == active_player && tile->piece_type != PieceType::NONE){
+                if(!capture_streak){
+                    selected_tile->mode = Tile::Mode::NORMAL;
+                    gen_avaliable_moves(tile);
+                    hint_avaliable_moves();
+                    tile->mode = Tile::Mode::SELECTED;
+                    selected_tile = tile;
+                }
+            }
+            else if(auto t = active_piece_moves.find(tile); t != active_piece_moves.end()){
+                if(tile->move(PieceMoveDir::F_LEFT, active_player) == nullptr){
                     tile->piece_type = PieceType::QUEEN;
+                }
                 else
                     tile->piece_type = selected_tile->piece_type;
 
                 tile->piece_color = selected_tile->piece_color;
-
                 selected_tile->mode = Tile::Mode::NORMAL;
-                selected_tile->piece_type = PieceType::NONE;
                 selected_tile->piece_color = PieceColor::NONE;
+                selected_tile->piece_type = PieceType::NONE;
 
-                bool capture_made = false;
-                if(!capture.empty()){
-                    std::vector<Tile*>::iterator it = std::find(capture.begin(), capture.end(), tile);
-                    if (it != capture.end() && std::next(it) != capture.end()){
-                        Tile* captured = *std::next(it);
-                        captured->piece_color = PieceColor::NONE;
-                        captured->piece_type = PieceType::NONE;
-                        capture_made = true;
-                    }
-                }
                 reset_avaliable_moves();
                 bool next_player = true;
-                if(capture_made){
-                    gen_avaliable_moves(tile);
-                    if (!avaliable_moves.empty()){
-                        selected_tile = tile;
-                        selected_tile->mode = Tile::Mode::SELECTED;
+                if(t->second != nullptr){
+                    t->second->piece_type = PieceType::NONE;
+                    t->second->piece_color = PieceColor::NONE;
+                    gen_avaliable_moves(tile, true);
+                    if(!active_piece_moves.empty()){
                         capture_streak = true;
                         next_player = false;
+                        selected_tile = tile;
+                        selected_tile->mode = Tile::Mode::SELECTED;
+                        hint_avaliable_moves();
                     }
                 }
                 if(next_player){
@@ -208,77 +222,89 @@ void Board::handle_event(ALLEGRO_EVENT event)
                     camera->interpolate_rotate_to(target_rot);
                     tileSelect->reset();
                 }
-
             }
         }
+
     }
 
 }
 void Board::reset_avaliable_moves(){
-    for (std::vector<Tile *>::iterator t = avaliable_moves.begin(); t != avaliable_moves.end(); t++){
-        (*t)->mode = Tile::Mode::NORMAL;
-    }
-    if(!capture.empty()){
-        for(int c = 1; c < capture.size(); c+=2){
-            capture[c]->mode = Tile::Mode::NORMAL;
-        }
 
+    for(std::unordered_map<Tile*,Tile*>::iterator it = active_piece_moves.begin(); it != active_piece_moves.end(); it++){
+        if(it->second != nullptr)
+            it->second->mode = Tile::Mode::NORMAL;
+        it->first->mode = Tile::Mode::NORMAL;
     }
-    avaliable_moves.clear();
-    capture.clear();
+    active_piece_moves.clear();
 }
-void Board::gen_pawn_move(Tile *tile, PieceMoveDir moveDir){
+void Board::gen_pawn_move(Tile *tile, PieceMoveDir moveDir, bool capture_only){
     Tile *moved;
     moved = tile->move(moveDir, active_player);
-    if(moved != nullptr){
-        if(moved->piece_type == PieceType::NONE){
-        avaliable_moves.push_back(moved);
-        moved->mode = Tile::Mode::HINT;
-        }
-        else if(moved->piece_color != active_player){
-            Tile* move_capture = moved->move(moveDir, active_player);
-            if (move_capture != nullptr && move_capture->piece_type == PieceType::NONE){
-                avaliable_moves.push_back(move_capture);
-                capture.push_back(move_capture);
-                capture.push_back(moved);
-                move_capture->mode = Tile::Mode::HINT;
-                moved->mode = Tile::Mode::CAPTURE;
-            }
-        }
+
+    if(moved == nullptr) return;
+    if(moved->piece_type == PieceType::NONE){
+        if(capture_only) return;
+        active_piece_moves.insert(std::make_pair(moved, nullptr));
+        return;
     }
+    if(moved->piece_color == active_player) return;
+    Tile* move_capture = moved->move(moveDir, active_player);
+    if(move_capture == nullptr || move_capture->piece_type != PieceType::NONE)
+        return;
+    active_piece_moves.insert(std::make_pair(move_capture, moved));
 }
 
-void Board::gen_queen_move(Tile *tile, PieceMoveDir moveDir){
+void Board::gen_queen_move(Tile *tile, PieceMoveDir moveDir, bool capture_only){
     bool cap = true;
     for(Tile *moved = tile->move(moveDir, active_player); moved != nullptr && cap; moved = moved->move(moveDir, active_player)){
+        // if(moved->piece_type == PieceType::NONE){
+        //     avaliable_moves.push_back(moved);
+        //     moved->mode = Tile::Mode::HINT;
+        // }
+        // else if(moved->piece_color != active_player){
+        //     cap = false;
+        //     Tile* move_capture = moved->move(moveDir, active_player);
+        //     if (move_capture != nullptr && move_capture->piece_type == PieceType::NONE){
+        //         avaliable_moves.push_back(move_capture);
+        //         capture.push_back(move_capture);
+        //         capture.push_back(moved);
+        //         move_capture->mode = Tile::Mode::HINT;
+        //         moved->mode = Tile::Mode::CAPTURE;
+        //     }
+        // }
+        // else break;
+
         if(moved->piece_type == PieceType::NONE){
-            avaliable_moves.push_back(moved);
-            moved->mode = Tile::Mode::HINT;
+            if(capture_only) break;
+            active_piece_moves.insert(std::make_pair(moved, nullptr));
+            continue;
         }
-        else if(moved->piece_color != active_player){
-            cap = false;
-            Tile* move_capture = moved->move(moveDir, active_player);
-            if (move_capture != nullptr && move_capture->piece_type == PieceType::NONE){
-                avaliable_moves.push_back(move_capture);
-                capture.push_back(move_capture);
-                capture.push_back(moved);
-                move_capture->mode = Tile::Mode::HINT;
-                moved->mode = Tile::Mode::CAPTURE;
-            }
-        }
-        else break;
+        if(moved->piece_color == active_player) break;
+        Tile* move_capture = moved->move(moveDir, active_player);
+        if(move_capture == nullptr || move_capture->piece_type != PieceType::NONE) break;
+        active_piece_moves.insert(std::make_pair(move_capture, moved));
+        break;
     }
 }
 
-void Board::gen_avaliable_moves(Tile *tile){
+void Board::gen_avaliable_moves(Tile *tile, bool capture_only){
     reset_avaliable_moves();
     if(tile->piece_type == PieceType::PAWN){
-        gen_pawn_move(tile, PieceMoveDir::F_LEFT);
-        gen_pawn_move(tile, PieceMoveDir::F_RIGHT);
+        gen_pawn_move(tile, PieceMoveDir::F_LEFT, capture_only);
+        gen_pawn_move(tile, PieceMoveDir::F_RIGHT, capture_only);
     }
     else if(tile->piece_type == PieceType::QUEEN){
         for(int d = 0; d < static_cast<int>(PieceMoveDir::NONE); d++){
-            gen_queen_move(tile, (PieceMoveDir)d);
+            gen_queen_move(tile, (PieceMoveDir)d, capture_only);
         }
+    }
+}
+
+void Board::hint_avaliable_moves(bool capture_only){
+    for(std::unordered_map<Tile*,Tile*>::iterator it = active_piece_moves.begin(); it != active_piece_moves.end(); it++){
+        if(it->second != nullptr)
+            it->second->mode = Tile::Mode::CAPTURE;
+        if(!capture_only || it->second != nullptr)
+            it->first->mode = Tile::Mode::HINT;
     }
 }
