@@ -20,15 +20,16 @@ class Board
     TileSelect *tileSelect;
     Tile *selected_tile;
     bool capture_streak;
+    bool force_capture;
     PieceColor active_player;
 
     std::vector<std::unordered_set<Tile*>> pieces;
     std::unordered_map<Tile*,Tile*> active_piece_moves;
     std::vector<Tile*> movable_pieces;
 
-    void gen_pawn_move(Tile *tile, PieceMoveDir moveDir, bool capture_only);
-    void gen_queen_move(Tile *tile, PieceMoveDir moveDir, bool capture_only);
-    void update_movable_pieces();
+    bool gen_pawn_move(Tile *tile, PieceMoveDir moveDir, bool capture_only);
+    bool gen_queen_move(Tile *tile, PieceMoveDir moveDir, bool capture_only);
+    void update_movable_pieces(bool capture_only = false);
 
 public:
 
@@ -39,7 +40,7 @@ public:
     Tile *get_tile_from_pos(float x, float y);
     Tile *get_tile_from_mouse_pos(float x, float y);
     Tile *get_tile_from_coords(int x, int y);
-    void gen_avaliable_moves(Tile *tile, bool capture_only = false);
+    bool gen_avaliable_moves(Tile *tile, bool capture_only = false);
     void hint_avaliable_moves(bool capture_only = false);
     void reset_avaliable_moves();
 };
