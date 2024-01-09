@@ -2,7 +2,7 @@
 #include <allegro5/allegro5.h>
 #include <settings.hpp>
 
-#define SHADER_PATH "../assets/shaders/"
+#define SHADER_PATH "assets/shaders/"
 
 class Camera
 {

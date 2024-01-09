@@ -1,18 +1,21 @@
 cmake_minimum_required(VERSION 3.20)
-project(tri-checkers)
+project(tri-checker)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/release)
 
 file(GLOB sources src/*.cpp)
-
+include_directories(include)
 add_executable(tri-checkers ${sources})
 
-include_directories(include)
-include_directories(assets/textures)
-# include_directories(assets/shaders)
-
 find_package(allegro CONFIG REQUIRED)
-
-set(libs ${allegro} ${allegro_main} ${allegro_image} ${allegro_primitives})
-
-cmake_path(SET allegro_include NORMALIZE ${allegro}/../../include/)
+set(allegro_include "${PACKAGE_PREFIX_DIR}/include")
+set(allegro_lib_dir "${PACKAGE_PREFIX_DIR}/lib")
+file(GLOB allegro_libs 
+    ${allegro_lib_dir}/liballegro.*
+    ${allegro_lib_dir}/liballegro_image.*
+    ${allegro_lib_dir}/liballegro_primitives.*
+)
 target_include_directories(tri-checkers PUBLIC ${allegro_include})
-target_link_libraries(tri-checkers ${libs})
+target_link_libraries(tri-checkers PUBLIC ${allegro_libs})
+
+file(COPY assets/shaders DESTINATION release/assets)
+file(COPY assets/textures DESTINATION release/assets)

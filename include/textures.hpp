@@ -1,7 +1,7 @@
 #pragma once
 #include <piece.hpp>
 #include <allegro5/allegro5.h>
-#define TEXTURE_PATH "../assets/textures/"
+#define TEXTURE_PATH "assets/textures/"
 
 class Textures
 {
