@@ -10,6 +10,7 @@ Game::Game()
     this->timer = al_create_timer(1.0 / FPS);
     this->textures = new Textures();
     this->board = new Board(textures, &camera);
+    this->gui.push_back((InterfaceElement*)new PauseButton(SCREEN_X-60,10,50,50,textures->PAUSE_BUTTON));
 }
 Game::~Game()
 {
@@ -17,6 +18,9 @@ Game::~Game()
     al_destroy_event_queue(event_queue);
     al_destroy_display(display);
     delete textures;
+    for(InterfaceElement* ele : gui){
+        delete ele;
+    }
 }
 void Game::handle_event(ALLEGRO_EVENT event)
 {
@@ -26,6 +30,10 @@ void Game::handle_event(ALLEGRO_EVENT event)
         // camera.rotate(0.005);
         camera.update();
         board->draw();
+        camera.disable();
+        for(InterfaceElement* ele : gui){
+            ele->draw();
+        }
 
         al_flip_display();
         al_clear_to_color(al_map_rgb(255, 227, 181));
@@ -33,6 +41,9 @@ void Game::handle_event(ALLEGRO_EVENT event)
     else
     {
         board->handle_event(event);
+        for(InterfaceElement* ele : gui){
+            ele->update(event);
+        }
     }
 }
 void Game::start()

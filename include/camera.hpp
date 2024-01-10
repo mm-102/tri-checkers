@@ -8,6 +8,7 @@ class Camera
 {
     ALLEGRO_SHADER* shader;
     ALLEGRO_TRANSFORM transform;
+    ALLEGRO_TRANSFORM indentity;
     ALLEGRO_TRANSFORM inv_transform;
     const float sensivity = 0.05;
     const float halfx = SCREEN_X * 0.5;
@@ -38,5 +39,6 @@ public:
     void rotate(float da);
     void interpolate_rotate_to(float a, bool only_clockwise=true);
     void update();
+    void disable();
     void revert_transform(float *x, float *y);
 };

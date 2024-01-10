@@ -36,6 +36,7 @@ Camera::Camera()
     rotation = 0;
     pressed = false;
     interpolating = false;
+    al_identity_transform(&indentity);
     al_identity_transform(&transform);
     al_translate_transform(&transform, halfx, halfy);
     update_inv_transform();
@@ -122,6 +123,11 @@ void Camera::rotate(float da)
 void Camera::update()
 {
     al_use_transform(&transform);
+}
+
+void Camera::disable()
+{
+    al_use_transform(&indentity);
 }
 
 void Camera::revert_transform(float *x, float *y)

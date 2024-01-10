@@ -1,6 +1,7 @@
 #pragma once
 #include <piece.hpp>
 #include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
 #define TEXTURE_PATH "assets/textures/"
 
 class Textures
@@ -9,11 +10,13 @@ class Textures
 public:
     ALLEGRO_BITMAP *TILE;
     ALLEGRO_BITMAP *TILE_SELECT;
+    ALLEGRO_BITMAP *PAUSE_BUTTON;
 
     Textures()
     {
         TILE = al_load_bitmap(TEXTURE_PATH "tile.png");
         TILE_SELECT = al_load_bitmap(TEXTURE_PATH "tile_select.png");
+        PAUSE_BUTTON = al_load_bitmap(TEXTURE_PATH "pause.png");
 
         _piece = new ALLEGRO_BITMAP*[static_cast<int>(PieceType::NONE)];
         _piece[static_cast<int>(PieceType::PAWN)] = al_load_bitmap(TEXTURE_PATH "pawn.png");
@@ -24,6 +27,7 @@ public:
     {
         al_destroy_bitmap(TILE);
         al_destroy_bitmap(TILE_SELECT);
+        al_destroy_bitmap(PAUSE_BUTTON);
         for(int t = 0; t < static_cast<int>(PieceType::NONE); t++)
             al_destroy_bitmap(_piece[t]);
         delete[] _piece;

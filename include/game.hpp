@@ -5,6 +5,8 @@
 #include <allegro5/allegro_image.h>
 #include <camera.hpp>
 #include <board.hpp>
+#include <gui.hpp>
+#include <vector>
 
 class Game
 {
@@ -18,6 +20,7 @@ class Game
 
     Camera camera;
     Board* board;
+    std::vector<InterfaceElement*> gui;
 
     void handle_event(ALLEGRO_EVENT event);
 
