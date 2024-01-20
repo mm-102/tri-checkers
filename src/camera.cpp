@@ -32,14 +32,7 @@ void Camera::set_use_shadow(bool use){
 
 Camera::Camera()
 {
-    zoom = 1;
-    rotation = 0;
-    pressed = false;
-    interpolating = false;
-    al_identity_transform(&indentity);
-    al_identity_transform(&transform);
-    al_translate_transform(&transform, halfx, halfy);
-    update_inv_transform();
+    reset();
 }
 
 void Camera::update_inv_transform()
@@ -63,9 +56,11 @@ void Camera::handle_event(ALLEGRO_EVENT event)
         break;
 
     case ALLEGRO_EVENT_MOUSE_AXES:
-        zoom_to_point(event.mouse);
-        if (pressed)
-            drag(event.mouse);
+        if(!paused){
+            zoom_to_point(event.mouse);
+            if (pressed)
+                drag(event.mouse);
+        }
     
     }
 }
@@ -156,4 +151,21 @@ void Camera::handle_interpolation(){
     double i_d = d * d * (3 - 2*d);
 
     rotate_to(inter_start_rot + (inter_end_rot-inter_start_rot)*i_d);
+}
+
+void Camera::set_paused(bool paused){
+    this->paused = paused;
+
+}
+
+void Camera::reset(){
+    zoom = 1;
+    rotation = 0;
+    pressed = false;
+    interpolating = false;
+    paused = false;
+    al_identity_transform(&indentity);
+    al_identity_transform(&transform);
+    al_translate_transform(&transform, halfx, halfy);
+    update_inv_transform();
 }

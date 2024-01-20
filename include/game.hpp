@@ -20,7 +20,9 @@ class Game
 
     Camera camera;
     Board* board;
+    bool paused;
     std::vector<InterfaceElement*> gui;
+    PauseMenu* pauseMenu;
 
     void handle_event(ALLEGRO_EVENT event);
 
@@ -28,4 +30,7 @@ public:
     Game();
     ~Game();
     void start();
+    void set_paused();
+    void set_paused(bool paused);
+    void set_board_size(int size);
 };

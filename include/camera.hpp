@@ -19,6 +19,7 @@ class Camera
     double zoom;
     float rotation;
     bool pressed;
+    bool paused;
 
     bool interpolating;
     double inter_start;
@@ -41,4 +42,6 @@ public:
     void update();
     void disable();
     void revert_transform(float *x, float *y);
+    void set_paused(bool paused);
+    void reset();
 };

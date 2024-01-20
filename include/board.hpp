@@ -10,6 +10,7 @@
 
 class Board
 {
+    int size;
     Camera *camera;
     std::vector<std::vector<Tile *>> tiles;
     ALLEGRO_COLOR tile_color;
@@ -33,7 +34,7 @@ class Board
 
 public:
 
-    Board(Textures *textures, Camera *camera);
+    Board(Textures *textures, Camera *camera, int size);
     ~Board();
     void draw();
     void handle_event(ALLEGRO_EVENT event);

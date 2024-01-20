@@ -9,10 +9,12 @@
 
 Board::~Board()
 {
+    delete tileSelect;
 }
 
-Board::Board(Textures *textures, Camera *camera)
+Board::Board(Textures *textures, Camera *camera, int size)
 {
+    this->size = size;
     this->camera = camera;
     this->tile_color = al_map_rgb(255, 205, 177);
     this->background_color = al_map_rgb(115, 23, 0);
@@ -29,8 +31,8 @@ Board::Board(Textures *textures, Camera *camera)
     ALLEGRO_BITMAP* tile_texture = textures->TILE;
     texW = al_get_bitmap_width(tile_texture);
     texH = al_get_bitmap_height(tile_texture);
-    const int min_y = -BOARD_SIZE;
-    const int max_y = (BOARD_SIZE - 1) * 2;
+    const int min_y = -size;
+    const int max_y = (size - 1) * 2;
     tiles = std::vector<std::vector<Tile *>>(max_y-min_y+1);
     int min_x = 0;
     int max_x = 0;
@@ -41,19 +43,19 @@ Board::Board(Textures *textures, Camera *camera)
             PieceType type = PieceType::NONE;
             PieceColor color = PieceColor::NONE;
             bool spawn = false;
-            if (max_y - y < BOARD_SIZE) // bottom
+            if (max_y - y < size) // bottom
             {
                 type = PieceType::PAWN;
                 color = PieceColor::RED;
                 spawn = true;
             }
-            else if (x - min_x < BOARD_SIZE - (y - min_y)) // top left
+            else if (x - min_x < size - (y - min_y)) // top left
             {
                 type = PieceType::PAWN;
                 color = PieceColor::BLUE;
                 spawn = true;
             }
-            else if (max_x - x < BOARD_SIZE - (y - min_y)) // top right
+            else if (max_x - x < size - (y - min_y)) // top right
             {
                 type = PieceType::PAWN;
                 color = PieceColor::GREEN;
@@ -129,7 +131,7 @@ Tile *Board::get_tile_from_pos(float x, float y)
     y -= 0.333 * texH;
     int row = floorf(y / texH);
     x += 0.5 * (1 + (abs(row) % 2)) * texW;
-    int col = floorf(x / texW) + floorf(BOARD_SIZE * 0.5) - 1 - (1 - (BOARD_SIZE % 2)) * (abs(row) % 2);
+    int col = floorf(x / texW) + floorf(size * 0.5) - 1 - (1 - (size % 2)) * (abs(row) % 2);
     int xox = (int)floor(x);
     int yoy = (int)floor(y);
     float ox = (xox % texW + texW) % texW;
@@ -144,8 +146,8 @@ Tile *Board::get_tile_from_pos(float x, float y)
 
 Tile *Board::get_tile_from_coords(int x, int y)
 {
-    int vec_y = y + BOARD_SIZE;
-    int vec_x = x + BOARD_SIZE - vec_y / 2;
+    int vec_y = y + size;
+    int vec_x = x + size - vec_y / 2;
     if (vec_y < 0 || vec_y >= tiles.size())
         return nullptr;
     if (vec_x < 0 || vec_x >= tiles[vec_y].size())
