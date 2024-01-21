@@ -297,7 +297,7 @@ void Board::hint_avaliable_moves(bool capture_only){
 }
 
 void Board::update_movable_pieces(bool capture_only){
-    bool cp;
+    bool cp = false;
     movable_pieces.clear();
     int i = static_cast<int>(active_player);
     for(auto it = pieces[i].begin(); it != pieces[i].end(); it++){
