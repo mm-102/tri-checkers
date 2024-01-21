@@ -6,6 +6,7 @@ Checkers, but for 3 players.
 
 C and C++ compiler
 CMake version 3.20 or later -> <https://www.cmake.org/>
+
 Allegro5 library installed -> <https://github.com/liballeg/allegro5>
 
 ## Building with CMake
