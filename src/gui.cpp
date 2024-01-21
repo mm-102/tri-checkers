@@ -147,7 +147,7 @@ void PauseMenu::draw(){
     boardSizeSlider->draw();
     al_draw_text(font[0], al_map_rgb(0,0,0), pos[0]+30, pos[1]+20,0,"Choose board size");
     char buf[4];
-    _itoa_s(board_size, buf, 10);
+    sprintf(buf, "%d",board_size);
     al_draw_text(font[0], al_map_rgb(0,0,0), pos[0]+30, pos[1]+100,0,buf);
     al_draw_text(font[1], al_map_rgb(0,0,0), pos[0]+50, pos[1]+200,0,"CHANGING BOARD SIZE");
     al_draw_text(font[1], al_map_rgb(0,0,0), pos[0]+50, pos[1]+230,0,"WILL RESET THE GAME");
