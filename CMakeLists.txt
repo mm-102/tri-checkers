@@ -9,6 +9,8 @@ add_executable(tri-checkers ${sources})
 message(${CMAKE_SYSTEM_NAME})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
+target_link_options(tri-checkers PRIVATE "-mwindows")
+
 find_library(allegro NAMES liballegro.dll liballegro.dll.a REQUIRED)
 find_library(allegro_image NAMES liballegro_image.dll liballegro_image.dll.a REQUIRED)
 find_library(allegro_primitives NAMES liballegro_primitives.dll liballegro_primitives.dll.a REQUIRED)
