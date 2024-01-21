@@ -82,11 +82,11 @@ void Game::set_paused(bool paused){
     this->paused = paused;
     this->pauseMenu->set_active(paused);
     camera.set_paused(paused);
-    std::cout << paused << std::endl;
+    // std::cout << paused << std::endl;
 }
 
 void Game::set_board_size(int size){
-    std::cout << size << std::endl;
+    // std::cout << size << std::endl;
     delete board;
     this->board = new Board(textures, &camera, size);
     this->camera.rotate_to(0);

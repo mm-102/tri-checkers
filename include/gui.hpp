@@ -1,5 +1,6 @@
 #pragma once
 #include<allegro5/allegro5.h>
+#include <allegro5/allegro_font.h>
 #include <functional>
 
 class InterfaceElement{
@@ -65,9 +66,12 @@ class PauseMenu : InterfaceElement{
     BoardSizeButton* boardSizeButton;
     Slider* boardSizeSlider;
     ALLEGRO_BITMAP* background;
+    ALLEGRO_FONT* font[2];
     int pos[2];
     int size[2];
     bool active;
+    int board_size;
+    std::function<void (int)> set_board_size;
 
 public:
     PauseMenu(int x, int y, int w, int h, ALLEGRO_BITMAP **textures, std::function<void (int)> set_board_size);
@@ -75,4 +79,5 @@ public:
     void draw() override;
     void update(ALLEGRO_EVENT event) override;
     void set_active(bool active);
+    void change_board_size(int size);
 };

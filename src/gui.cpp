@@ -1,6 +1,8 @@
 #include <gui.hpp>
 #include <iostream>
 #include <settings.hpp>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 Button::Button(int x, int y, int w, int h){
     pos[0] = x;
@@ -114,17 +116,28 @@ void Slider::update(ALLEGRO_EVENT event){
 
 PauseMenu::PauseMenu(int x, int y, int w, int h, ALLEGRO_BITMAP **textures, std::function<void (int)> set_board_size){
     this->background = textures[0];
+    this->font[0] = al_load_ttf_font("assets/font/coolvetica.ttf", 48, 0);
+    this->font[1] = al_load_ttf_font("assets/font/Freshman.ttf", 24, 0);
+    this->set_board_size = set_board_size;
     // boardSizeButton = new BoardSizeButton(x,y,64,64,textures[3],[&](){});
-    boardSizeSlider = new Slider(x + w/2 - 128, y+64, 256, 64, 67, 64, textures[1], textures[2], set_board_size);
+    boardSizeSlider = new Slider(x + w/2 - 128, y+96, 256, 64, 67, 64, textures[1], textures[2], [&](int size){change_board_size(size);});
     pos[0] = x;
     pos[1] = y;
     size[0] = w;
     size[1] = h;
     active = false;
+    board_size = 4;
 }
 PauseMenu::~PauseMenu(){
     delete boardSizeButton;
     delete boardSizeSlider;
+    al_destroy_font(font[0]);
+    al_destroy_font(font[1]);
+}
+
+void PauseMenu::change_board_size(int size){
+    board_size = size;
+    set_board_size(size);
 }
 
 void PauseMenu::draw(){
@@ -132,6 +145,12 @@ void PauseMenu::draw(){
         return;
     al_draw_bitmap(background, pos[0], pos[1],0);
     boardSizeSlider->draw();
+    al_draw_text(font[0], al_map_rgb(0,0,0), pos[0]+30, pos[1]+20,0,"Choose board size");
+    char buf[4];
+    _itoa_s(board_size, buf, 10);
+    al_draw_text(font[0], al_map_rgb(0,0,0), pos[0]+30, pos[1]+100,0,buf);
+    al_draw_text(font[1], al_map_rgb(0,0,0), pos[0]+50, pos[1]+200,0,"CHANGING BOARD SIZE");
+    al_draw_text(font[1], al_map_rgb(0,0,0), pos[0]+50, pos[1]+230,0,"WILL RESET THE GAME");
     // boardSizeButton->draw();
 }
 
